@@ -1,202 +1,201 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Exel AI — Premium Dark</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<title>Exel AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
 <style>
 :root {
   --primary: #0FA2F5;
   --primary-hover: #0B82C5;
-  --background-start: #111827;
-  --background-end: #1F2937;
-  --surface: #1E293B;
+  --bg-dark: #0f172a;
+  --bg-darker: #020617;
+  --surface: #111827;
+  --input-bg: #1f2937;
   --border: #374151;
-  --text-primary: #E0F2FE;
-  --text-secondary: #94A3B8;
-  --muted-bg: #2D3748;
-  --error: #DC2626;
-  --success: #16A34A;
+  --text: #e5f2ff;
+  --muted: #94a3b8;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
-  font-family: 'Segoe UI', sans-serif;
   margin: 0;
-  background: linear-gradient(135deg, var(--background-start), var(--background-end));
-  color: var(--text-primary);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  font-family: "Segoe UI", sans-serif;
+  background: linear-gradient(120deg, var(--bg-dark), var(--bg-darker));
   min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
 }
 
-.container {
+.app {
+  width: 100%;
+  max-width: 800px;
+  height: 90vh;
   background: var(--surface);
-  padding: 30px;
-  border-radius: 20px;
-  box-shadow: 0 0 30px rgba(15,162,245,0.5);
-  width: 360px;
+  border-radius: 22px;
+  box-shadow: 0 0 40px rgba(15,162,245,0.45);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+header {
+  padding: 18px;
   text-align: center;
-}
-
-h2 {
-  margin-bottom:20px;
+  font-size: 1.6rem;
+  font-weight: bold;
   color: var(--primary);
-  text-shadow: 0 0 10px #0FA2F5, 0 0 20px #0FA2F5, 0 0 30px #0FA2F5;
+  text-shadow: 0 0 10px var(--primary), 0 0 25px var(--primary);
+  border-bottom: 1px solid var(--border);
 }
-
-input {
-  width:100%;
-  padding:12px;
-  margin:10px 0;
-  border-radius:12px;
-  border:1px solid var(--border);
-  background: var(--muted-bg);
-  color: var(--text-primary);
-}
-
-button {
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  border:none;
-  border-radius:12px;
-  background: var(--primary);
-  color:#fff;
-  cursor:pointer;
-  font-weight:bold;
-  transition:0.3s;
-  box-shadow: 0 0 8px #0FA2F5, 0 0 20px #0FA2F5;
-}
-button:hover { background: var(--primary-hover); box-shadow: 0 0 15px #0B82C5, 0 0 30px #0B82C5; }
-
-#chatContainer { display:none; flex-direction:column; height:80vh; width:90vw; max-width:700px; }
 
 #chatbox {
-  flex:1;
-  overflow-y:auto;
-  padding:15px;
-  background: var(--muted-bg);
-  border-radius:15px;
-  margin-bottom:10px;
-  border:1px solid var(--border);
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: linear-gradient(180deg, #0b1220, #020617);
 }
 
 .message {
-  padding:12px 18px;
-  border-radius:25px;
-  margin:8px 0;
-  max-width:80%;
-  word-wrap:break-word;
-  display:inline-block;
+  max-width: 85%;
+  padding: 14px 18px;
+  border-radius: 18px;
+  line-height: 1.4;
+  word-wrap: break-word;
 }
 
-.user {background: var(--primary); color:#fff; align-self:flex-end;}
-.bot {background: var(--surface); color: var(--text-primary); align-self:flex-start;}
+.user {
+  align-self: flex-end;
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 0 12px rgba(15,162,245,0.6);
+}
 
-#inputContainer {display:flex;}
-#userInput {flex:1; padding:12px; border-radius:20px; border:1px solid var(--border); background:var(--muted-bg); color: var(--text-primary);}
-#sendBtn {padding:12px 18px; margin-left:10px; border:none; border-radius:20px; background:var(--primary); color:#fff; cursor:pointer;}
-#sendBtn:hover {background: var(--primary-hover);}
+.bot {
+  align-self: flex-start;
+  background: #0b1220;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
 
-#authMsg {color: var(--error); text-align:center; margin-top:10px;}
-#switchAuth {text-align:center; margin-top:10px; color: var(--text-secondary); cursor:pointer;}
+.input-area {
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+  background: #020617;
+  border-top: 1px solid var(--border);
+}
+
+textarea {
+  flex: 1;
+  resize: none;
+  height: 60px;
+  padding: 14px;
+  border-radius: 16px;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 1rem;
+}
+
+textarea::placeholder {
+  color: var(--muted);
+}
+
+button {
+  width: 90px;
+  border: none;
+  border-radius: 16px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(15,162,245,0.7);
+  transition: 0.2s;
+}
+
+button:hover {
+  background: var(--primary-hover);
+  box-shadow: 0 0 22px rgba(11,130,197,0.9);
+}
 </style>
 </head>
+
 <body>
 
-<!-- Fake Login / Sign-up -->
-<div class="container" id="authContainer">
-  <h2 id="authTitle">Sign Up</h2>
-  <input type="text" id="username" placeholder="Username" required>
-  <input type="password" id="password" placeholder="Password" required>
-  <button id="authBtn">Sign Up</button>
-  <p id="switchAuth">Already have an account? Log In</p>
-  <p id="authMsg"></p>
-</div>
+<div class="app">
+  <header>Exel AI</header>
 
-<!-- Chat container -->
-<div id="chatContainer">
-  <header style="text-align:center; padding:10px; font-weight:bold; font-size:1.5rem; text-shadow: 0 0 5px #0FA2F5, 0 0 15px #0FA2F5;">Exel AI</header>
   <div id="chatbox"></div>
-  <div id="inputContainer">
-    <input type="text" id="userInput" placeholder="Ask anything...">
+
+  <div class="input-area">
+    <textarea id="userInput" placeholder="Ask Exel AI anything..."></textarea>
     <button id="sendBtn">Send</button>
   </div>
 </div>
 
-<!-- TensorFlow & Transformers for AI -->
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.9.0/dist/tf.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@xenova/transformers@1.0.4/dist/transformers.min.js"></script>
-
 <script>
-// Fake auth logic
-const authContainer = document.getElementById("authContainer");
-const authTitle = document.getElementById("authTitle");
-const authBtn = document.getElementById("authBtn");
-const switchAuth = document.getElementById("switchAuth");
-const authMsg = document.getElementById("authMsg");
-let isSignUp = true;
-
-switchAuth.onclick = ()=>{
-  isSignUp = !isSignUp;
-  authTitle.textContent = isSignUp?"Sign Up":"Log In";
-  authBtn.textContent = isSignUp?"Sign Up":"Log In";
-  switchAuth.textContent = isSignUp?"Already have an account? Log In":"Don't have an account? Sign Up";
-  authMsg.textContent = "";
-}
-
-authBtn.onclick = ()=>{
-  const username = document.getElementById("username").value.trim();
-  const password = document.getElementById("password").value.trim();
-  if(!username || !password){
-    authMsg.textContent = "Please enter username and password!";
-    return;
-  }
-  // fake "success"
-  authContainer.style.display = "none";
-  chatContainer.style.display = "flex";
-}
-
-// Chat logic
 const chatbox = document.getElementById("chatbox");
 const input = document.getElementById("userInput");
 const sendBtn = document.getElementById("sendBtn");
 
-let model;
-async function loadModel(){
-  model = await window.transformers.AutoModelForCausalLM.from_pretrained('Xenova/gpt2-mini');
-}
-loadModel();
+const WORKER_URL = "https://exel-ai-worker.skibidyrizz11.workers.dev";
 
 sendBtn.onclick = sendMessage;
-input.addEventListener("keypress", e=>{if(e.key==="Enter") sendMessage();});
-
-async function sendMessage(){
-  const text = input.value.trim();
-  if(!text) return;
-  addMessage("user", text);
-  input.value="";
-  addMessage("bot","Typing... ⏳");
-  if(!model){
-    chatbox.lastChild.textContent = "[Model loading, please wait...]";
-    return;
+input.addEventListener("keydown", e => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
   }
-  try{
-    const output = await model.generate([text], {max_length:50});
-    chatbox.lastChild.textContent = output[0].generated_text || "[No response]";
-  } catch(e){
-    chatbox.lastChild.textContent = "[Error generating response]";
-  }
-}
+});
 
-function addMessage(sender,text){
-  const div = document.createElement("div");
-  div.className = "message "+sender;
-  div.textContent = text;
-  chatbox.appendChild(div);
+function addMessage(type, text) {
+  const msg = document.createElement("div");
+  msg.className = "message " + type;
+  msg.textContent = text;
+  chatbox.appendChild(msg);
   chatbox.scrollTop = chatbox.scrollHeight;
 }
+
+async function sendMessage() {
+  const text = input.value.trim();
+  if (!text) return;
+
+  addMessage("user", text);
+  input.value = "";
+  addMessage("bot", "Typing… ⏳");
+
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        messages: [{ role: "user", content: text }]
+      })
+    });
+
+    const data = await res.json();
+
+    const reply =
+      data?.choices?.[0]?.message?.content || "[No response]";
+
+    chatbox.lastChild.textContent = reply;
+  } catch (err) {
+    console.error(err);
+    chatbox.lastChild.textContent = "[Error contacting AI]";
+  }
+}
 </script>
+
 </body>
 </html>
