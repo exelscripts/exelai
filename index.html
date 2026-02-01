@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8">
 <title>Exel AI</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 :root {
@@ -33,8 +33,8 @@ body {
 
 .app {
   width: 100%;
-  max-width: 900px;
-  height: 90vh;
+  max-width: 950px;
+  height: 92vh;
   background: var(--surface);
   border-radius: 22px;
   box-shadow: 0 0 40px rgba(15,162,245,0.45);
@@ -49,7 +49,7 @@ header {
   font-size: 1.6rem;
   font-weight: bold;
   color: var(--primary);
-  text-shadow: 0 0 10px var(--primary);
+  text-shadow: 0 0 12px var(--primary);
   border-bottom: 1px solid var(--border);
 }
 
@@ -64,12 +64,14 @@ header {
 }
 
 .tab {
-  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
   background: #0b1220;
   border-radius: 14px;
-  cursor: pointer;
-  white-space: nowrap;
   border: 1px solid var(--border);
+  cursor: pointer;
 }
 
 .tab.active {
@@ -81,8 +83,16 @@ header {
   background: transparent;
   border: none;
   color: white;
-  width: 80px;
+  width: 90px;
   outline: none;
+}
+
+.tab button {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
 }
 
 /* Chat */
@@ -100,6 +110,8 @@ header {
   max-width: 85%;
   padding: 14px 18px;
   border-radius: 18px;
+  line-height: 1.4;
+  word-wrap: break-word;
 }
 
 .user {
@@ -124,15 +136,16 @@ header {
 textarea {
   flex: 1;
   resize: none;
-  height: 60px;
+  height: 65px;
   padding: 14px;
   border-radius: 16px;
   background: var(--input-bg);
   border: 1px solid var(--border);
   color: var(--text);
+  font-size: 1rem;
 }
 
-button {
+button.send {
   width: 90px;
   border-radius: 16px;
   border: none;
@@ -141,7 +154,7 @@ button {
   font-weight: bold;
   cursor: pointer;
 }
-button:hover { background: var(--primary-hover); }
+button.send:hover { background: var(--primary-hover); }
 </style>
 </head>
 
@@ -155,20 +168,38 @@ button:hover { background: var(--primary-hover); }
   <div id="chatbox"></div>
 
   <div class="input-area">
-    <textarea id="input" placeholder="Ask Exel AI..."></textarea>
-    <button onclick="send()">Send</button>
+    <textarea id="input" placeholder="Ask Exel AI... (Shift+Enter = new line)"></textarea>
+    <button class="send" onclick="send()">Send</button>
   </div>
 </div>
 
 <script>
 const WORKER_URL = "https://exel-ai-worker.skibidyrizz11.workers.dev";
+const STORAGE_KEY = "exel_ai_chats";
 
-let chats = [];
+let chats = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 let active = 0;
 
-function newTab(name="AI Tab") {
+function saveChats() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(chats));
+}
+
+function newTab(name = "New Chat") {
   chats.push({ name, messages: [] });
   active = chats.length - 1;
+  saveChats();
+  renderTabs();
+  renderChat();
+}
+
+function deleteTab(index) {
+  if (chats.length === 1) {
+    alert("You must keep at least one tab.");
+    return;
+  }
+  chats.splice(index, 1);
+  if (active >= chats.length) active = chats.length - 1;
+  saveChats();
   renderTabs();
   renderChat();
 }
@@ -176,16 +207,42 @@ function newTab(name="AI Tab") {
 function renderTabs() {
   const tabs = document.getElementById("tabs");
   tabs.innerHTML = "";
+
   chats.forEach((t, i) => {
     const tab = document.createElement("div");
     tab.className = "tab" + (i === active ? " active" : "");
+
     const input = document.createElement("input");
     input.value = t.name;
-    input.oninput = e => t.name = e.target.value;
-    tab.onclick = () => { active = i; renderTabs(); renderChat(); };
+    input.onclick = e => e.stopPropagation();
+    input.oninput = e => {
+      t.name = e.target.value;
+      saveChats();
+    };
+
+    const del = document.createElement("button");
+    del.textContent = "🗑️";
+    del.onclick = e => {
+      e.stopPropagation();
+      deleteTab(i);
+    };
+
+    tab.onclick = () => {
+      active = i;
+      renderTabs();
+      renderChat();
+    };
+
     tab.appendChild(input);
+    tab.appendChild(del);
     tabs.appendChild(tab);
   });
+
+  const plus = document.createElement("div");
+  plus.className = "tab";
+  plus.textContent = "+";
+  plus.onclick = () => newTab();
+  tabs.appendChild(plus);
 }
 
 function renderChat() {
@@ -208,23 +265,49 @@ async function send() {
   chats[active].messages.push({ role: "user", content: text });
   input.value = "";
   renderChat();
+  saveChats();
 
   chats[active].messages.push({ role: "bot", content: "Typing…" });
   renderChat();
 
-  const res = await fetch(WORKER_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ messages: chats[active].messages.map(m => ({ role: m.role === "bot" ? "assistant" : m.role, content: m.content })) })
-  });
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        messages: chats[active].messages.map(m => ({
+          role: m.role === "bot" ? "assistant" : m.role,
+          content: m.content
+        }))
+      })
+    });
 
-  const data = await res.json();
-  chats[active].messages.pop();
-  chats[active].messages.push({ role: "bot", content: data.choices[0].message.content });
+    const data = await res.json();
+
+    const reply =
+      data?.choices?.[0]?.message?.content ||
+      data?.error?.message ||
+      "[AI returned no response]";
+
+    chats[active].messages.pop();
+    chats[active].messages.push({ role: "bot", content: reply });
+
+  } catch (err) {
+    chats[active].messages.pop();
+    chats[active].messages.push({
+      role: "bot",
+      content: "[Error contacting AI]"
+    });
+  }
+
+  saveChats();
   renderChat();
 }
 
-newTab("Main");
+// Init
+if (chats.length === 0) newTab("Main");
+renderTabs();
+renderChat();
 </script>
 
 </body>
