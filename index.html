@@ -2,93 +2,158 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Exel AI — Free Version</title>
+<title>Exel AI — Premium</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
+:root {
+  --primary: #0FA2F5;
+  --primary-hover: #0B82C5;
+  --background: #F8F9FB;
+  --surface: #FFFFFF;
+  --border: #E5E7EB;
+  --text-primary: #111827;
+  --text-secondary: #6B7280;
+  --muted-bg: #F3F4F6;
+  --error: #DC2626;
+  --success: #16A34A;
+}
 body {
-  margin:0;
-  font-family:'Segoe UI',Arial,sans-serif;
-  display:flex;
-  flex-direction:column;
-  height:100vh;
-  background: linear-gradient(135deg,#1a1a1a,#0a0a0a);
-  background-size:400% 400%;
-  animation:bgGradient 10s ease infinite;
-  color:#fff;
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  background: var(--background);
+  color: var(--text-primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
-@keyframes bgGradient {0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
-header {
-  padding:15px 20px;
-  background:#111;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  border-bottom-left-radius:20px;
-  border-bottom-right-radius:20px;
-  box-shadow:0 0 15px rgba(0,255,255,0.2);
+.container {
+  background: var(--surface);
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+  width: 350px;
 }
-header .title {
-  font-weight:bold;
-  font-size:1.8rem;
-  background:linear-gradient(90deg,#0af,#0f0,#0af);
-  background-size:200% 200%;
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  animation:gradientText 4s ease infinite;
+h2 {text-align:center; margin-bottom:20px;}
+input {width:100%; padding:10px; margin:10px 0; border-radius:10px; border:1px solid var(--border); background: var(--muted-bg);}
+button {
+  width:100%; padding:12px; margin-top:10px; border:none; border-radius:10px;
+  background: var(--primary); color:#fff; cursor:pointer; font-weight:bold;
 }
-@keyframes gradientText {0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
-#chatbox {flex:1;overflow-y:auto;padding:15px;background:#111;border-radius:25px;margin:15px;box-shadow:0 0 20px rgba(0,255,255,0.1);}
+button:hover { background: var(--primary-hover); }
+#chatContainer { display:none; flex-direction:column; height:80vh; width:90vw; max-width:700px; }
+#chatbox { flex:1; overflow-y:auto; padding:15px; background:#fff; border-radius:15px; margin-bottom:10px; border:1px solid var(--border);}
 .message {padding:12px 18px;border-radius:25px;margin:8px 0;max-width:80%;word-wrap:break-word;display:inline-block;}
-.user {background:#0af2;color:#0ff;align-self:flex-end;}
-.bot {background:#0f02;color:#0f0;align-self:flex-start;}
-#inputContainer {display:flex;padding:15px;}
-#userInput {flex:1;padding:14px 18px;border-radius:25px;border:none;background:#222;color:#fff;font-size:1rem;outline:none;}
-#sendBtn {padding:14px 20px;margin-left:10px;border-radius:25px;border:none;background:#0af;color:#000;font-weight:bold;cursor:pointer;box-shadow:0 0 15px #0af;transition:.3s;}
-#sendBtn:hover {background:#00ffff;box-shadow:0 0 30px #0af;}
+.user {background: var(--primary); color:#fff; align-self:flex-end;}
+.bot {background: var(--muted-bg); color:#111827; align-self:flex-start;}
+#inputContainer {display:flex;}
+#userInput {flex:1;padding:12px;border-radius:20px;border:1px solid var(--border);}
+#sendBtn {padding:12px 18px;margin-left:10px;border:none;border-radius:20px;background:var(--primary);color:#fff; cursor:pointer;}
+#sendBtn:hover {background: var(--primary-hover);}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="title">Exel AI</div>
-</header>
-
-<div id="chatbox"></div>
-<div id="inputContainer">
-  <input type="text" id="userInput" placeholder="Ask anything..." />
-  <button id="sendBtn">Send</button>
+<div class="container" id="authContainer">
+  <h2 id="authTitle">Sign Up</h2>
+  <input type="email" id="email" placeholder="Email" required>
+  <input type="password" id="password" placeholder="Password" required>
+  <button id="authBtn">Sign Up</button>
+  <p id="switchAuth" style="text-align:center; margin-top:10px; color:var(--text-secondary); cursor:pointer;">Already have an account? Log In</p>
+  <p id="authMsg" style="color:var(--error); text-align:center;"></p>
 </div>
 
-<!-- TensorFlow.js and GPT-2 small -->
+<div id="chatContainer">
+  <header style="text-align:center; padding:10px; font-weight:bold; font-size:1.5rem; background: linear-gradient(90deg,#0FA2F5,#0F0,#0FA2F5); -webkit-background-clip:text; -webkit-text-fill-color:transparent; animation:gradientText 4s ease infinite;">Exel AI</header>
+  <div id="chatbox"></div>
+  <div id="inputContainer">
+    <input type="text" id="userInput" placeholder="Ask anything...">
+    <button id="sendBtn">Send</button>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+</script>
+
+<!-- AI (using GPT-2 in browser) -->
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.9.0/dist/tf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@xenova/transformers@1.0.4/dist/transformers.min.js"></script>
-<script>
-let model;
-async function loadModel() {
-    model = await window.transformers.AutoModelForCausalLM.from_pretrained('Xenova/gpt2-small');
-}
-loadModel();
 
+<script>
+// Auth logic
+const authContainer = document.getElementById("authContainer");
+const authTitle = document.getElementById("authTitle");
+const authBtn = document.getElementById("authBtn");
+const switchAuth = document.getElementById("switchAuth");
+const authMsg = document.getElementById("authMsg");
+let isSignUp = true;
+
+switchAuth.onclick = ()=>{
+  isSignUp = !isSignUp;
+  authTitle.textContent = isSignUp?"Sign Up":"Log In";
+  authBtn.textContent = isSignUp?"Sign Up":"Log In";
+  switchAuth.textContent = isSignUp?"Already have an account? Log In":"Don't have an account? Sign Up";
+  authMsg.textContent = "";
+}
+
+authBtn.onclick = async ()=>{
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  try{
+    if(isSignUp){
+      await auth.createUserWithEmailAndPassword(email,password);
+    } else {
+      await auth.signInWithEmailAndPassword(email,password);
+    }
+  } catch(err){
+    authMsg.textContent = err.message;
+  }
+};
+
+// Show chat if logged in
+auth.onAuthStateChanged(user=>{
+  if(user){
+    authContainer.style.display="none";
+    chatContainer.style.display="flex";
+  }
+});
+
+// Chat AI
+const chatContainer = document.getElementById("chatContainer");
 const chatbox = document.getElementById("chatbox");
 const input = document.getElementById("userInput");
 const sendBtn = document.getElementById("sendBtn");
 
+let model;
+async function loadModel(){
+  model = await window.transformers.AutoModelForCausalLM.from_pretrained('Xenova/gpt2-mini');
+}
+loadModel();
+
 sendBtn.onclick = sendMessage;
 input.addEventListener("keypress", e=>{if(e.key==="Enter") sendMessage();});
 
-async function sendMessage() {
+async function sendMessage(){
   const text = input.value.trim();
   if(!text) return;
   addMessage("user", text);
   input.value="";
   addMessage("bot","Typing... ⏳");
-
   if(!model){
     chatbox.lastChild.textContent = "[Model loading, please wait...]";
     return;
   }
-
-  try {
+  try{
     const output = await model.generate([text], {max_length:50});
     chatbox.lastChild.textContent = output[0].generated_text || "[No response]";
   } catch(e){
