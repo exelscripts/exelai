@@ -108,7 +108,7 @@ button:hover { background: var(--primary-hover); }
 </div>
 
 <div id="chatContainer">
-  <header style="text-align:center; padding:10px; font-weight:bold; font-size:1.5rem; background: linear-gradient(90deg,var(--primary),#0F0,var(--primary)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; animation:gradientText 4s ease infinite;">Exel AI</header>
+  <header style="text-align:center; padding:10px; font-weight:bold; font-size:1.5rem; background: linear-gradient(90deg,var(--primary),#0F0,var(--primary)); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">Exel AI</header>
   <div id="chatbox"></div>
   <div id="inputContainer">
     <input type="text" id="userInput" placeholder="Ask anything...">
@@ -124,12 +124,12 @@ const firebaseConfig = {
   apiKey: "AIzaSyBblM3QvJGS93mw6gaX-tWCGtikVdjLxAs",
   authDomain: "exel-ai.firebaseapp.com",
   projectId: "exel-ai",
-  storageBucket: "exel-ai.firebasestorage.app",
+  storageBucket: "exel-ai.appspot.com",
   messagingSenderId: "10267981709",
   appId: "1:10267981709:web:a322dc7d5029fab4526fc4"
 };
 firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth(); // ✅ now defined
+const auth = firebase.auth();
 </script>
 
 <!-- AI (GPT-2 mini in browser) -->
