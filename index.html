@@ -35,9 +35,10 @@ body {
   border-radius: 20px;
   box-shadow: 0 0 20px rgba(0,0,0,0.1);
   width: 360px;
+  text-align: center;
 }
 
-h2 {text-align:center; margin-bottom:20px; color: var(--text-primary);}
+h2 {margin-bottom:20px; color: var(--text-primary);}
 
 input {
   width:100%;
@@ -98,15 +99,17 @@ button:hover { background: var(--primary-hover); }
 </head>
 <body>
 
+<!-- Fake Login / Sign-up -->
 <div class="container" id="authContainer">
   <h2 id="authTitle">Sign Up</h2>
-  <input type="email" id="email" placeholder="Email" required>
+  <input type="text" id="username" placeholder="Username" required>
   <input type="password" id="password" placeholder="Password" required>
   <button id="authBtn">Sign Up</button>
   <p id="switchAuth">Already have an account? Log In</p>
   <p id="authMsg"></p>
 </div>
 
+<!-- Chat container -->
 <div id="chatContainer">
   <header style="text-align:center; padding:10px; font-weight:bold; font-size:1.5rem; background: linear-gradient(90deg,var(--primary),#0F0,var(--primary)); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">Exel AI</header>
   <div id="chatbox"></div>
@@ -116,28 +119,12 @@ button:hover { background: var(--primary-hover); }
   </div>
 </div>
 
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyBblM3QvJGS93mw6gaX-tWCGtikVdjLxAs",
-  authDomain: "exel-ai.firebaseapp.com",
-  projectId: "exel-ai",
-  storageBucket: "exel-ai.appspot.com",
-  messagingSenderId: "10267981709",
-  appId: "1:10267981709:web:a322dc7d5029fab4526fc4"
-};
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-</script>
-
-<!-- AI (GPT-2 mini in browser) -->
+<!-- TensorFlow & Transformers for AI -->
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.9.0/dist/tf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@xenova/transformers@1.0.4/dist/transformers.min.js"></script>
 
 <script>
-// Auth logic
+// Fake auth logic (UI only)
 const authContainer = document.getElementById("authContainer");
 const authTitle = document.getElementById("authTitle");
 const authBtn = document.getElementById("authBtn");
@@ -153,30 +140,19 @@ switchAuth.onclick = ()=>{
   authMsg.textContent = "";
 }
 
-authBtn.onclick = async ()=>{
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  try{
-    if(isSignUp){
-      await auth.createUserWithEmailAndPassword(email,password);
-    } else {
-      await auth.signInWithEmailAndPassword(email,password);
-    }
-  } catch(err){
-    authMsg.textContent = err.message;
+authBtn.onclick = ()=>{
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
+  if(!username || !password){
+    authMsg.textContent = "Please enter username and password!";
+    return;
   }
-};
+  // fake "success"
+  authContainer.style.display = "none";
+  chatContainer.style.display = "flex";
+}
 
-// Show chat if logged in
-const chatContainer = document.getElementById("chatContainer");
-auth.onAuthStateChanged(user=>{
-  if(user){
-    authContainer.style.display="none";
-    chatContainer.style.display="flex";
-  }
-});
-
-// Chat AI
+// Chat logic
 const chatbox = document.getElementById("chatbox");
 const input = document.getElementById("userInput");
 const sendBtn = document.getElementById("sendBtn");
