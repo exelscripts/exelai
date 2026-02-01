@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exel AI</title>
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  header {
+    padding: 15px;
+    background: #111;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  header h1 { margin: 0; }
+
+  #tabs {
+    display: flex;
+    border-bottom: 1px solid #333;
+  }
+
+  .tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    border-right: 1px solid #333;
+    background: #111;
+  }
+
+  .tab.active { background: #222; }
+
+  #chatContainer {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+  }
+
+  #chatbox {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    background: #111;
+    border-radius: 10px;
+    margin-bottom: 10px;
+  }
+
+  .user { color: #0af; margin: 5px 0; }
+  .bot { color: #0f0; margin: 5px 0; }
+
+  #inputContainer {
+    display: flex;
+  }
+
+  #userInput {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    background: #222;
+    color: #fff;
+  }
+
+  #sendBtn {
+    padding: 10px 20px;
+    margin-left: 5px;
+    border: none;
+    border-radius: 10px;
+    background: #0af;
+    color: #000;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Exel AI</h1>
+  <button onclick="addTab()">+ New AI</button>
+</header>
+
+<div id="tabs"></div>
+
+<div id="chatContainer">
+  <div id="chatbox"></div>
+  <div id="inputContainer">
+    <input type="text" id="userInput" placeholder="Ask me anything..." />
+    <button id="sendBtn">Send</button>
+  </div>
+</div>
+
+<script>
+let tabs = [];
+let activeTab = 0;
+
+// Initialize first tab
+addTab();
+
+function addTab() {
+  const tabId = tabs.length;
+  tabs.push({ messages: [] });
+
+  const tabEl = document.createElement("div");
+  tabEl.className = "tab";
+  tabEl.textContent = "AI " + (tabId + 1);
+  tabEl.onclick = () => switchTab(tabId);
+  document.getElementById("tabs").appendChild(tabEl);
+
+  switchTab(tabId);
+}
+
+function switchTab(id) {
+  activeTab = id;
+  const tabEls = document.querySelectorAll(".tab");
+  tabEls.forEach((t, i) => t.classList.toggle("active", i === id));
+  renderChat();
+}
+
+function renderChat() {
+  const chatbox = document.getElementById("chatbox");
+  chatbox.innerHTML = "";
+  tabs[activeTab].messages.forEach(msg => {
+    const div = document.createElement("div");
+    div.className = msg.sender;
+    div.textContent = msg.text;
+    chatbox.appendChild(div);
+  });
+  chatbox.scrollTop = chatbox.scrollHeight;
+}
+
+document.getElementById("sendBtn").onclick = sendMessage;
+document.getElementById("userInput").addEventListener("keypress", e => {
+  if(e.key === "Enter") sendMessage();
+});
+
+function sendMessage() {
+  const input = document.getElementById("userInput");
+  const text = input.value.trim();
+  if(!text) return;
+  input.value = "";
+
+  addMessage("user", text);
+
+  // Fake instant AI response (replace with free API if needed)
+  setTimeout(() => {
+    addMessage("bot", generateResponse(text));
+  }, 300);
+}
+
+function addMessage(sender, text) {
+  tabs[activeTab].messages.push({ sender, text });
+  renderChat();
+}
+
+// Simple local AI simulation (completely free)
+function generateResponse(text) {
+  const lower = text.toLowerCase();
+  if(lower.includes("hello")) return "Hello! I'm Exel AI. How can I help you today?";
+  if(lower.includes("time")) return "I can't tell real time in this demo.";
+  return "This is a free demo of Exel AI. For live AI, a backend is required.";
+}
+</script>
+
+</body>
+</html>
